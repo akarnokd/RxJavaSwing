@@ -23,17 +23,26 @@ import io.reactivex.Scheduler;
  */
 public final class SwingSchedulers {
 
+    /**
+     * Holds onto the default Scheduler instance which
+     * gets only instantiated if there was an actual
+     * call to the {@link SwingSchedulers#edt()}.
+     */
     static final class AsyncHolder {
         static final Scheduler INSTANCE = AsyncSwingScheduler.INSTANCE;
     }
 
+    /** Utility class. */
     private SwingSchedulers() {
         throw new IllegalStateException("No instances!");
     }
 
     /**
-     * Returns the default Event Dispatch Thread scheduler.
-     * @return the Scheduler
+     * Returns the default Event Dispatch Thread (EDT) scheduler.
+     * <p>
+     * The default value can be overridden via
+     * {@link RxSwingPlugins#setOnEdtScheduler(io.reactivex.functions.Function)}.
+     * @return the EDT Scheduler
      */
     public static Scheduler edt() {
         return RxSwingPlugins.onEdtScheduler(AsyncHolder.INSTANCE);

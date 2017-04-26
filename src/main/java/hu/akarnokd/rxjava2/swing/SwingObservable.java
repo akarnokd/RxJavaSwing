@@ -26,7 +26,7 @@ import javax.swing.table.*;
 import javax.swing.text.*;
 import javax.swing.tree.*;
 
-import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.annotations.*;
 import io.reactivex.internal.functions.ObjectHelper;
 
@@ -416,5 +416,33 @@ public final class SwingObservable {
     public static Observable<TreeExpansionEvent> treeWillExpand(@NonNull JTree component) {
         ObjectHelper.requireNonNull(component, "component is null");
         return RxSwingPlugins.onAssembly(new TreeWillExpandEventObservable(component));
+    }
+
+    /**
+     * Sends the oberved upstream event directly to the Event Dispatch thread individually
+     * (unlike observeOn which may occupy the EDT longer with a fast emitting source).
+     * <p>
+     * To be used with {@link Observable#compose(ObservableTransformer)}.
+     * <p>
+     * This custom observeOn should allow more interleaving with other EDT-submitted
+     * tasks and not occupy the EDT for too long.
+     * <p>
+     * Example:<pre><code>
+     * Observable.range(1, 5)
+     * .compose(SwingObservable.observeOnEdt())
+     * .subscribe(System.out::println);
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>The operator doesn't run on any scheduler as it directly submits work to the EDT
+     *  via {@code EventQueue.invokeLater()}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @return the new ObservableTransformer.
+     */
+    @CheckReturnValue
+    @NonNull
+    public static <T> ObservableTransformer<T, T> observeOnEdt() {
+        return new SwingObserveOn<T>(null);
     }
 }
