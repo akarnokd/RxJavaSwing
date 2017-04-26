@@ -19,7 +19,7 @@ package hu.akarnokd.rxjava2.swing;
 import io.reactivex.Scheduler;
 
 /**
- * Hosts the default {@link Scheduler}s for RxSwing: {@link #edt()} and {@link #edtEager()}.
+ * Hosts the default {@link Scheduler}s for RxSwing: {@link #edt()}.
  */
 public final class SwingSchedulers {
 
@@ -34,19 +34,8 @@ public final class SwingSchedulers {
     /**
      * Returns the default Event Dispatch Thread scheduler.
      * @return the Scheduler
-     * @see #edtEager()
      */
     public static Scheduler edt() {
-        return RxSwingPlugins.onAsyncScheduler(AsyncHolder.INSTANCE);
-    }
-
-    /**
-     * Returns a Scheduler that keeps the event processing on
-     * the Event Dispatch Thread if the sender is also on the
-     * EDT.
-     * @return the Scheduler
-     */
-    public static Scheduler edtEager() {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        return RxSwingPlugins.onEdtScheduler(AsyncHolder.INSTANCE);
     }
 }

@@ -16,21 +16,22 @@
 
 package hu.akarnokd.rxjava2.swing;
 
-import io.reactivex.Scheduler;
+import io.reactivex.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.util.ExceptionHelper;
 
 /**
  * Static methods to override some of the RxSwing infrastructure, such as
- * the schedulers and task hook.
+ * the scheduler and task hook.
  */
 public final class RxSwingPlugins {
 
-    static volatile Function<Runnable, Runnable> onSchedule;
+    private static volatile Function<Runnable, Runnable> onSchedule;
 
-    static volatile Function<Scheduler, Scheduler> onAsyncScheduler;
+    private static volatile Function<Scheduler, Scheduler> onEdtScheduler;
 
-    static volatile Function<Scheduler, Scheduler> onSyncScheduler;
+    @SuppressWarnings("rawtypes")
+    private static volatile Function<Observable, Observable> onAssembly;
 
     /** Utility class. */
     private RxSwingPlugins() {
@@ -49,8 +50,8 @@ public final class RxSwingPlugins {
         }
     }
 
-    public static Scheduler onAsyncScheduler(Scheduler original) {
-        Function<Scheduler, Scheduler> f = onAsyncScheduler;
+    public static Scheduler onEdtScheduler(Scheduler original) {
+        Function<Scheduler, Scheduler> f = onEdtScheduler;
         if (f == null) {
             return original;
         }
@@ -61,8 +62,9 @@ public final class RxSwingPlugins {
         }
     }
 
-    public static Scheduler onSyncScheduler(Scheduler original) {
-        Function<Scheduler, Scheduler> f = onSyncScheduler;
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Observable<T> onAssembly(Observable<T> original) {
+        Function<Observable, Observable> f = onAssembly;
         if (f == null) {
             return original;
         }
@@ -71,5 +73,18 @@ public final class RxSwingPlugins {
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
+    }
+
+    public static void setOnSchedule(Function<Runnable, Runnable> handler) {
+        onSchedule = handler;
+    }
+
+    public static void setOnEdtScheduler(Function<Scheduler, Scheduler> handler) {
+        onEdtScheduler = handler;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static void setOnAssembly(Function<Observable, Observable> handler) {
+        onAssembly = handler;
     }
 }
