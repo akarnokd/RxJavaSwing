@@ -75,8 +75,16 @@ public final class RxSwingPlugins {
         }
     }
 
+    public static Function<Runnable, Runnable> getOnSchedule() {
+        return onSchedule;
+    }
+
     public static void setOnSchedule(Function<Runnable, Runnable> handler) {
         onSchedule = handler;
+    }
+
+    public static Function<Scheduler, Scheduler> getOnEdtScheduler() {
+        return onEdtScheduler;
     }
 
     public static void setOnEdtScheduler(Function<Scheduler, Scheduler> handler) {
@@ -84,7 +92,18 @@ public final class RxSwingPlugins {
     }
 
     @SuppressWarnings("rawtypes")
+    public static Function<Observable, Observable> getOnAssembly() {
+        return onAssembly;
+    }
+
+    @SuppressWarnings("rawtypes")
     public static void setOnAssembly(Function<Observable, Observable> handler) {
         onAssembly = handler;
+    }
+
+    public static void reset() {
+        onSchedule = null;
+        onEdtScheduler = null;
+        onAssembly = null;
     }
 }

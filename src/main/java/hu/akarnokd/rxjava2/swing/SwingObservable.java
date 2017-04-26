@@ -21,6 +21,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 
 import javax.swing.*;
+import javax.swing.colorchooser.ColorSelectionModel;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.text.*;
@@ -42,6 +43,14 @@ public final class SwingObservable {
     public static final int MOUSE_WHEEL = 3;
 
     public static final int MOUSE_ALL = MOUSE_CLICK | MOUSE_MOVE | MOUSE_WHEEL;
+
+    public static final int WINDOW_ACTIVE = 1;
+
+    public static final int WINDOW_FOCUS = 2;
+
+    public static final int WINDOW_STATE = 4;
+
+    public static final int WINDOW_ALL = WINDOW_ACTIVE | WINDOW_FOCUS | WINDOW_STATE;
 
     /** Factory class. */
     private SwingObservable() {
@@ -439,10 +448,115 @@ public final class SwingObservable {
      * </dl>
      * @param <T> the value type
      * @return the new ObservableTransformer.
+     * @since 0.1.1
      */
     @CheckReturnValue
     @NonNull
     public static <T> ObservableTransformer<T, T> observeOnEdt() {
         return new SwingObserveOn<T>(null);
     }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<ItemEvent> itemSelection(@NonNull ItemSelectable component) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new ItemEventObservable(component));
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<ChangeEvent> change(@NonNull JTabbedPane component) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new ChangeEventTabbedPaneObservable(component));
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<ChangeEvent> change(@NonNull JSlider component) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new ChangeEventSliderObservable(component));
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<ChangeEvent> change(@NonNull JSpinner component) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new ChangeEventSpinnerObservable(component));
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<ChangeEvent> change(@NonNull SpinnerModel component) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new ChangeEventSpinnerModelObservable(component));
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<ChangeEvent> change(@NonNull AbstractButton component) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new ChangeEventButtonObservable(component));
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<ChangeEvent> change(@NonNull ButtonModel component) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new ChangeEventButtonModelObservable(component));
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<ChangeEvent> change(@NonNull JViewport component) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new ChangeEventViewportObservable(component));
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<ChangeEvent> change(@NonNull ColorSelectionModel component) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new ChangeEventColorObservable(component));
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<ChangeEvent> change(@NonNull JProgressBar component) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new ChangeEventProgressBarObservable(component));
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<ChangeEvent> change(@NonNull BoundedRangeModel component) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new ChangeEventBoundedRangeObservable(component));
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<WindowEvent> window(@NonNull Window component) {
+        return window(component, WINDOW_ALL);
+    }
+
+    @CheckReturnValue
+    @NonNull
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static Observable<WindowEvent> window(@NonNull Window component, int flags) {
+        ObjectHelper.requireNonNull(component, "component is null");
+        return RxSwingPlugins.onAssembly(new WindowEventObservable(component, flags));
+    }
+
 }

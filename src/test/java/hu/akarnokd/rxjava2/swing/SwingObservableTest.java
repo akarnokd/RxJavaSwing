@@ -13,6 +13,8 @@
 
 package hu.akarnokd.rxjava2.swing;
 
+import java.lang.reflect.*;
+
 import org.junit.Test;
 
 public class SwingObservableTest {
@@ -22,4 +24,43 @@ public class SwingObservableTest {
         TestHelper.checkUtilityClass(SwingObservable.class);
     }
 
+    @Test
+    public void nullChecks() throws Exception {
+        for (Method m : SwingObservable.class.getMethods()) {
+            if ((m.getModifiers() & Modifier.STATIC) != 0) {
+                if (m.getParameterCount() == 1) {
+                    try {
+                        m.invoke(null, new Object[] { null });
+                        throw new RuntimeException(m.toString());
+                    } catch (InvocationTargetException ex) {
+                        if (!(ex.getCause() instanceof NullPointerException)) {
+                            throw new RuntimeException(m.toString(), ex);
+                        }
+                    }
+                }
+
+                if (m.getParameterCount() == 2) {
+                    try {
+                        Object o = null;
+
+                        if (m.getParameterTypes()[1] == Integer.TYPE) {
+                            o = 1;
+                        }
+                        if (m.getParameterTypes()[1] == String.class) {
+                            o = "Str";
+                        }
+
+                        m.invoke(null, new Object[] { null, o });
+                        throw new RuntimeException(m.toString());
+                    } catch (InvocationTargetException ex) {
+                        if (!(ex.getCause() instanceof NullPointerException)) {
+                            throw new RuntimeException(m.toString(), ex);
+                        }
+                    } catch (Throwable ex) {
+                        throw new RuntimeException(m.toString(), ex);
+                    }
+                }
+            }
+        }
+    }
 }
