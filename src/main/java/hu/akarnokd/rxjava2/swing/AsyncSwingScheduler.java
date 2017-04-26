@@ -26,6 +26,8 @@ import javax.swing.Timer;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.util.OpenHashSet;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -48,7 +50,7 @@ final class AsyncSwingScheduler extends Scheduler {
         DirectTimedTask dtt = new DirectTimedTask(
                 RxSwingPlugins.onSchedule(run),
                 (int)unit.toMillis(delay),
-                (int)Math.max(0, unit.toMillis(delay))
+                (int)Math.max(0, unit.toMillis(delay)), false
         );
         dtt.start();
         return dtt;
@@ -59,7 +61,7 @@ final class AsyncSwingScheduler extends Scheduler {
         DirectTimedTask dtt = new DirectTimedTask(
                 RxSwingPlugins.onSchedule(run),
                 (int)unit.toMillis(initialDelay),
-                (int)Math.max(0, unit.toMillis(period))
+                (int)Math.max(0, unit.toMillis(period)), true
         );
         dtt.start();
         return dtt;
@@ -73,36 +75,190 @@ final class AsyncSwingScheduler extends Scheduler {
     static final class AsyncSwingWorker extends Worker {
 
         volatile boolean disposed;
-        
-        
+
+        OpenHashSet<Disposable> tasks;
+
+        AsyncSwingWorker() {
+            this.tasks = new OpenHashSet<Disposable>();
+        }
+
         @Override
         public void dispose() {
-            // TODO Auto-generated method stub
-            
+            if (!disposed) {
+                OpenHashSet<Disposable> set;
+                synchronized (this) {
+                    if (disposed) {
+                        return;
+                    }
+                    set = tasks;
+                    tasks = null;
+                    disposed = true;
+                }
+
+                Object[] keys = set.keys();
+                for (Object o : keys) {
+                    if (o instanceof Disposable) {
+                        ((Disposable) o).dispose();
+                    }
+                }
+            }
         }
 
         @Override
         public boolean isDisposed() {
-            // TODO Auto-generated method stub
+            return disposed;
+        }
+
+        void remove(Disposable d) {
+            if (!disposed) {
+                synchronized (this) {
+                    if (disposed) {
+                        return;
+                    }
+
+                    tasks.remove(d);
+                }
+            }
+        }
+
+        boolean add(Disposable d) {
+            if (!disposed) {
+                synchronized (this) {
+                    if (!disposed) {
+                        tasks.add(d);
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 
         @Override
         public Disposable schedule(Runnable run) {
-            // TODO Auto-generated method stub
-            return null;
+            WorkerTask wt = new WorkerTask(RxSwingPlugins.onSchedule(run));
+            if (add(wt)) {
+                EventQueue.invokeLater(wt);
+                return wt;
+            }
+            return EmptyDisposable.INSTANCE;
         }
 
         @Override
         public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
-            // TODO Auto-generated method stub
-            return null;
+            WorkerTimedTask wtt = new WorkerTimedTask(
+                    RxSwingPlugins.onSchedule(run),
+                    (int)unit.toMillis(delay),
+                    (int)Math.max(0, unit.toMillis(delay)), false
+            );
+            if (add(wtt)) {
+                wtt.start();
+                return wtt;
+            }
+            return EmptyDisposable.INSTANCE;
         }
 
         @Override
         public Disposable schedulePeriodically(Runnable run, long initialDelay, long period, TimeUnit unit) {
-            // TODO Auto-generated method stub
-            return null;
+            WorkerTimedTask wtt = new WorkerTimedTask(
+                    RxSwingPlugins.onSchedule(run),
+                    (int)unit.toMillis(initialDelay),
+                    (int)Math.max(0, unit.toMillis(period)), true
+            );
+            if (add(wtt)) {
+                wtt.start();
+                return wtt;
+            }
+            return EmptyDisposable.INSTANCE;
+        }
+
+        final class WorkerTask extends AtomicReference<Runnable> implements Runnable, Disposable {
+
+            private static final long serialVersionUID = 3954858753004137205L;
+
+            WorkerTask(Runnable run) {
+                lazySet(run);
+            }
+
+            @Override
+            public void dispose() {
+                if (getAndSet(null) != null) {
+                    remove(this);
+                }
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return get() == null;
+            }
+
+            @Override
+            public void run() {
+                Runnable r = get();
+                if (r != null && compareAndSet(r, null)) {
+                    try {
+                        try {
+                            r.run();
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            RxJavaPlugins.onError(ex);
+                        }
+                    } finally {
+                        remove(this);
+                    }
+                }
+            }
+        }
+
+        final class WorkerTimedTask extends Timer implements ActionListener, Disposable {
+
+            private static final long serialVersionUID = 1146820542834025296L;
+
+            final boolean periodic;
+
+            Runnable run;
+
+            WorkerTimedTask(Runnable run, int initialDelayMillis, int periodMillis, boolean periodic) {
+                super(0, null);
+                this.run = run;
+                this.periodic = periodic;
+                setInitialDelay(initialDelayMillis);
+                setDelay(periodMillis);
+                addActionListener(this);
+            }
+
+            @Override
+            public void dispose() {
+                run = null;
+                stop();
+                remove(this);
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return run == null;
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Runnable r = run;
+                if (r != null) {
+                    try {
+                        r.run();
+                    } catch (Throwable ex) {
+                        run = null;
+                        stop();
+                        remove(this);
+                        Exceptions.throwIfFatal(ex);
+                        RxJavaPlugins.onError(ex);
+                        return;
+                    }
+                    if (!periodic) {
+                        run = null;
+                        stop();
+                        remove(this);
+                    }
+                }
+            }
         }
     }
 
@@ -142,10 +298,14 @@ final class AsyncSwingScheduler extends Scheduler {
 
         private static final long serialVersionUID = 1146820542834025296L;
 
+        final boolean periodic;
+
         Runnable run;
 
-        DirectTimedTask(Runnable run, int initialDelayMillis, int periodMillis) {
+        DirectTimedTask(Runnable run, int initialDelayMillis, int periodMillis, boolean periodic) {
             super(0, null);
+            this.run = run;
+            this.periodic = periodic;
             setInitialDelay(initialDelayMillis);
             setDelay(periodMillis);
             addActionListener(this);
@@ -169,8 +329,15 @@ final class AsyncSwingScheduler extends Scheduler {
                 try {
                     r.run();
                 } catch (Throwable ex) {
+                    run = null;
+                    stop();
                     Exceptions.throwIfFatal(ex);
                     RxJavaPlugins.onError(ex);
+                    return;
+                }
+                if (!periodic) {
+                    run = null;
+                    stop();
                 }
             }
         }
