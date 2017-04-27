@@ -13,9 +13,17 @@
 
 package hu.akarnokd.rxjava2.swing;
 
+import static hu.akarnokd.rxjava2.swing.SwingObservable.actions;
+
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
 import java.lang.reflect.*;
 
+import javax.swing.JButton;
+
 import org.junit.Test;
+
+import io.reactivex.observers.TestObserver;
 
 public class SwingObservableTest {
 
@@ -62,5 +70,37 @@ public class SwingObservableTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void abstractButtonAction() {
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                JButton button = new JButton();
+
+                TestObserver<ActionEvent> to = actions(button)
+                .test();
+
+                button.doClick();
+
+                to
+                  .assertSubscribed()
+                  .assertValueCount(1)
+                  .assertNotTerminated();
+
+                button.doClick(3);
+
+                to.assertValueCount(4)
+                .assertNotTerminated();
+
+                to.dispose();
+
+                button.doClick();
+
+                to.assertValueCount(4)
+                .assertNotTerminated();
+            }
+        });
     }
 }
