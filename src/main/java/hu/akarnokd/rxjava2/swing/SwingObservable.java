@@ -36,20 +36,56 @@ import io.reactivex.internal.functions.ObjectHelper;
  */
 public final class SwingObservable {
 
+    /**
+     * Flag constant for {@link #mouse(Component, int)} indicating only the
+     * {@link MouseListener} events should be forwarded.
+     */
     public static final int MOUSE_CLICK = 1;
 
+    /**
+     * Flag constant for {@link #mouse(Component, int)} indicating only the
+     * {@link MouseMotionListener} events should be forwarded.
+     */
     public static final int MOUSE_MOVE = 2;
 
-    public static final int MOUSE_WHEEL = 3;
+    /**
+     * Flag constant for {@link #mouse(Component, int)} indicating only the
+     * {@link MouseWheelListener} events should be forwarded.
+     * <p>
+     * Note that the {@link MouseWheelEvent} extends {@link MouseEvent}
+     * and the consumer should check and cast back the stream of
+     * {@code MouseEvent}.
+     */
+    public static final int MOUSE_WHEEL = 4;
 
+    /**
+     * The combination of the {@link #MOUSE_CLICK}, {@link #MOUSE_MOVE} and
+     * {@link #MOUSE_WHEEL} flags.
+     */
     public static final int MOUSE_ALL = MOUSE_CLICK | MOUSE_MOVE | MOUSE_WHEEL;
 
+    /**
+     * Flag constant for the {@link #window(Window, int)} indicating only
+     * the {@link WindowListener} events should be forwarded.
+     */
     public static final int WINDOW_ACTIVE = 1;
 
+    /**
+     * Flag constant for the {@link #window(Window, int)} indicating only
+     * the {@link WindowFocusListener} events should be forwarded.
+     */
     public static final int WINDOW_FOCUS = 2;
 
+    /**
+     * Flag constant for the {@link #window(Window, int)} indicating only
+     * the {@link WindowStateListener} events should be forwarded.
+     */
     public static final int WINDOW_STATE = 4;
 
+    /**
+     * The combination of {@link #WINDOW_ACTIVE}, {@link #WINDOW_FOCUS} and
+     * {@link #WINDOW_STATE} flags.
+     */
     public static final int WINDOW_ALL = WINDOW_ACTIVE | WINDOW_FOCUS | WINDOW_STATE;
 
     /** Factory class. */
