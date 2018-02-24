@@ -16,7 +16,7 @@ Bridge between Java 6 Swing (GUI) events and RxJava 2 + a scheduler for the swin
 
 ```
 dependencies {
-    compile "com.github.akarnokd:rxjava2-swing:0.2.9"
+    compile "com.github.akarnokd:rxjava2-swing:0.2.10"
 }
 ```
 
