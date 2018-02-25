@@ -126,7 +126,7 @@ javadoc {
 }
 
 test {
-    systemProperty "java.awt.headless", "true"
+    // systemProperty "java.awt.headless", "true"
     maxHeapSize = "2g"
     testLogging  {
         events "started", "failed" // "skipped", "passed"
