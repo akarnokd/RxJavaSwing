@@ -34,7 +34,7 @@ abstract class AbstractEventConsumer<E, W> extends AtomicReference<W> implements
 
     @Override
     public final boolean isDisposed() {
-        return get() != null;
+        return get() == null;
     }
 
     @Override

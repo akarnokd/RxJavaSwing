@@ -16,19 +16,32 @@
 
 package hu.akarnokd.rxjava2.swing;
 
+import static org.junit.Assert.*;
+
+import java.util.List;
 import java.util.concurrent.*;
 
 import org.junit.*;
 
+import hu.akarnokd.rxjava2.swing.AsyncSwingScheduler.*;
+import hu.akarnokd.rxjava2.swing.AsyncSwingScheduler.AsyncSwingWorker.*;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class SwingSchedulersTest {
 
     @Test
     public void utilityClass() {
         TestHelper.checkUtilityClass(SwingSchedulers.class);
+    }
+
+    @Test
+    public void holder() {
+        new SwingSchedulers.AsyncHolder();
     }
 
     @Test
@@ -163,6 +176,275 @@ public class SwingSchedulersTest {
             Assert.assertEquals(0, t.calls);
         } finally {
             w.dispose();
+        }
+    }
+
+    @Test
+    public void tasksAfterWorkerDispose() {
+        Worker w = SwingSchedulers.edt().createWorker();
+        try {
+            assertFalse(w.isDisposed());
+
+            w.dispose();
+
+            assertTrue(w.isDisposed());
+
+            assertSame(EmptyDisposable.INSTANCE, w.schedule(Functions.EMPTY_RUNNABLE));
+            assertSame(EmptyDisposable.INSTANCE, w.schedule(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MILLISECONDS));
+            assertSame(EmptyDisposable.INSTANCE, w.schedulePeriodically(Functions.EMPTY_RUNNABLE, 1, 1, TimeUnit.MILLISECONDS));
+        } finally {
+            w.dispose();
+        }
+    }
+
+    @Test
+    public void workerTask() {
+        AsyncSwingWorker w = (AsyncSwingWorker)SwingSchedulers.edt().createWorker();
+        try {
+            final int[] calls = { 0 };
+
+            WorkerTask wt = w.new WorkerTask(new Runnable() {
+                @Override
+                public void run() {
+                    calls[0]++;
+                }
+            });
+
+            assertFalse(wt.isDisposed());
+
+            wt.dispose();
+
+            assertTrue(wt.isDisposed());
+
+            wt.run();
+
+            assertEquals(0, calls[0]);
+        } finally {
+            w.dispose();
+        }
+    }
+
+    @Test
+    public void workerTaskCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+            AsyncSwingWorker w = (AsyncSwingWorker)SwingSchedulers.edt().createWorker();
+            try {
+                final int[] calls = { 0 };
+
+                WorkerTask wt = w.new WorkerTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        calls[0]++;
+                        throw new IllegalStateException();
+                    }
+                });
+
+                assertFalse(wt.isDisposed());
+
+                wt.run();
+
+                wt.dispose();
+
+                assertTrue(wt.isDisposed());
+
+                assertEquals(1, calls[0]);
+            } finally {
+                w.dispose();
+            }
+
+            assertEquals(1, errors.size());
+            TestHelper.assertError(errors, 0, IllegalStateException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void workerTaskRunDisposeRace() {
+        AsyncSwingWorker w = (AsyncSwingWorker)SwingSchedulers.edt().createWorker();
+        try {
+            final WorkerTask wt = w.new WorkerTask(Functions.EMPTY_RUNNABLE);
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    wt.dispose();
+                }
+            };
+
+            TestHelper.race(wt, r2);
+        } finally {
+            w.dispose();
+        }
+    }
+
+    @Test
+    public void workerTimedTask() {
+        AsyncSwingWorker w = (AsyncSwingWorker)SwingSchedulers.edt().createWorker();
+        try {
+            final int[] calls = { 0 };
+
+            WorkerTimedTask wt = w.new WorkerTimedTask(new Runnable() {
+                @Override
+                public void run() {
+                    calls[0]++;
+                }
+            }, 1, 1, false);
+
+            assertFalse(wt.isDisposed());
+
+            wt.dispose();
+
+            assertTrue(wt.isDisposed());
+
+            wt.actionPerformed(null);
+
+            assertEquals(0, calls[0]);
+        } finally {
+            w.dispose();
+        }
+    }
+
+    @Test
+    public void workerTimedTaskCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+            AsyncSwingWorker w = (AsyncSwingWorker)SwingSchedulers.edt().createWorker();
+            try {
+                final int[] calls = { 0 };
+
+                WorkerTimedTask wt = w.new WorkerTimedTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        calls[0]++;
+                        throw new IllegalStateException();
+                    }
+                }, 1, 1, false);
+
+                assertFalse(wt.isDisposed());
+
+                wt.actionPerformed(null);
+
+                wt.dispose();
+
+                assertTrue(wt.isDisposed());
+
+                assertEquals(1, calls[0]);
+            } finally {
+                w.dispose();
+            }
+
+            assertEquals(1, errors.size());
+            TestHelper.assertError(errors, 0, IllegalStateException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void workerDirectTask() {
+        final int[] calls = { 0 };
+
+        DirectTask wt = new DirectTask(new Runnable() {
+            @Override
+            public void run() {
+                calls[0]++;
+            }
+        });
+
+        assertFalse(wt.isDisposed());
+
+        wt.dispose();
+
+        assertTrue(wt.isDisposed());
+
+        wt.run();
+
+        assertEquals(0, calls[0]);
+    }
+
+    @Test
+    public void workerDirectTaskCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final int[] calls = { 0 };
+
+            DirectTask wt = new DirectTask(new Runnable() {
+                @Override
+                public void run() {
+                    calls[0]++;
+                    throw new IllegalStateException();
+                }
+            });
+
+            assertFalse(wt.isDisposed());
+
+            wt.run();
+
+            wt.dispose();
+
+            assertTrue(wt.isDisposed());
+
+            assertEquals(1, calls[0]);
+
+            assertEquals(1, errors.size());
+            TestHelper.assertError(errors, 0, IllegalStateException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void workerDirectTimedTask() {
+        final int[] calls = { 0 };
+
+        DirectTimedTask wt = new DirectTimedTask(new Runnable() {
+            @Override
+            public void run() {
+                calls[0]++;
+            }
+        }, 1, 1, false);
+
+        assertFalse(wt.isDisposed());
+
+        wt.dispose();
+
+        assertTrue(wt.isDisposed());
+
+        wt.actionPerformed(null);
+
+        assertEquals(0, calls[0]);
+    }
+
+    @Test
+    public void workerDirectTimedTaskCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final int[] calls = { 0 };
+
+            DirectTimedTask wt = new DirectTimedTask(new Runnable() {
+                @Override
+                public void run() {
+                    calls[0]++;
+                    throw new IllegalStateException();
+                }
+            }, 1, 1, false);
+
+            assertFalse(wt.isDisposed());
+
+            wt.actionPerformed(null);
+
+            wt.dispose();
+
+            assertTrue(wt.isDisposed());
+
+            assertEquals(1, calls[0]);
+
+            assertEquals(1, errors.size());
+            TestHelper.assertError(errors, 0, IllegalStateException.class);
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 }

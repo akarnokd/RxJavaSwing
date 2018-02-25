@@ -464,7 +464,7 @@ public final class SwingObservable {
     }
 
     /**
-     * Sends the oberved upstream event directly to the Event Dispatch thread individually
+     * Sends the observed upstream event directly to the Event Dispatch thread individually
      * (unlike observeOn which may occupy the EDT longer with a fast emitting source).
      * <p>
      * To be used with {@link Observable#compose(ObservableTransformer)}.

@@ -24,10 +24,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.Timer;
 
 import io.reactivex.Scheduler;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.util.OpenHashSet;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -74,63 +73,28 @@ final class AsyncSwingScheduler extends Scheduler {
 
     static final class AsyncSwingWorker extends Worker {
 
-        volatile boolean disposed;
-
-        OpenHashSet<Disposable> tasks;
+        CompositeDisposable tasks;
 
         AsyncSwingWorker() {
-            this.tasks = new OpenHashSet<Disposable>();
+            this.tasks = new CompositeDisposable();
         }
 
         @Override
         public void dispose() {
-            if (!disposed) {
-                OpenHashSet<Disposable> set;
-                synchronized (this) {
-                    if (disposed) {
-                        return;
-                    }
-                    set = tasks;
-                    tasks = null;
-                    disposed = true;
-                }
-
-                Object[] keys = set.keys();
-                for (Object o : keys) {
-                    if (o instanceof Disposable) {
-                        ((Disposable) o).dispose();
-                    }
-                }
-            }
+            tasks.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return disposed;
+            return tasks.isDisposed();
         }
 
         void remove(Disposable d) {
-            if (!disposed) {
-                synchronized (this) {
-                    if (disposed) {
-                        return;
-                    }
-
-                    tasks.remove(d);
-                }
-            }
+            tasks.delete(d);
         }
 
         boolean add(Disposable d) {
-            if (!disposed) {
-                synchronized (this) {
-                    if (!disposed) {
-                        tasks.add(d);
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return tasks.add(d);
         }
 
         @Override
@@ -193,18 +157,15 @@ final class AsyncSwingScheduler extends Scheduler {
 
             @Override
             public void run() {
-                Runnable r = get();
-                if (r != null && compareAndSet(r, null)) {
+                Runnable r = getAndSet(null);
+                if (r != null) {
                     try {
-                        try {
-                            r.run();
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            RxJavaPlugins.onError(ex);
-                        }
-                    } finally {
-                        remove(this);
+                        r.run();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        RxJavaPlugins.onError(ex);
                     }
+                    remove(this);
                 }
             }
         }
@@ -272,8 +233,8 @@ final class AsyncSwingScheduler extends Scheduler {
 
         @Override
         public void run() {
-            Runnable r = get();
-            if (r != null && compareAndSet(r, null)) {
+            Runnable r = getAndSet(null);
+            if (r != null) {
                 try {
                     r.run();
                 } catch (Throwable ex) {
