@@ -46,7 +46,6 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.ProtocolViolationException;
 import io.reactivex.functions.Consumer;
-import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public class SwingObservableTest {
@@ -138,8 +137,8 @@ public class SwingObservableTest {
             public void run() {
                 JButton button = new JButton();
 
-                TestObserver<ActionEvent> to = actions(button)
-                .test();
+                TestObserverEx<ActionEvent> to = actions(button)
+                .subscribeWith(new TestObserverEx<ActionEvent>());
 
                 button.doClick();
 
@@ -176,8 +175,8 @@ public class SwingObservableTest {
 
                 cb.setSelectedIndex(0);
 
-                TestObserver<ActionEvent> to = actions(cb)
-                .test();
+                TestObserverEx<ActionEvent> to = actions(cb)
+                .subscribeWith(new TestObserverEx<ActionEvent>());
 
                 cb.setSelectedIndex(1);
 
@@ -210,8 +209,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<MouseEvent> to = mouse(cb)
-                .test();
+                TestObserverEx<MouseEvent> to = mouse(cb)
+                .subscribeWith(new TestObserverEx<MouseEvent>());
 
                 MouseEvent evt = new MouseEvent(cb, 0, 0, 0, 100, 100, 1, false);
 
@@ -265,8 +264,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<MouseEvent> to = mouse(cb, 0)
-                .test();
+                TestObserverEx<MouseEvent> to = mouse(cb, 0)
+                .subscribeWith(new TestObserverEx<MouseEvent>());
 
                 assertEquals(0, cb.getMouseListeners().length);
                 assertEquals(0, cb.getMouseMotionListeners().length);
@@ -288,8 +287,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<MouseEvent> to = mouse(cb)
-                .test();
+                TestObserverEx<MouseEvent> to = mouse(cb)
+                .subscribeWith(new TestObserverEx<MouseEvent>());
 
                 MouseEvent evt = new MouseEvent(cb, 0, 0, 0, 100, 100, 1, false);
 
@@ -333,8 +332,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<MouseWheelEvent> to = mouseWheel(cb)
-                .test();
+                TestObserverEx<MouseWheelEvent> to = mouseWheel(cb)
+                .subscribeWith(new TestObserverEx<MouseWheelEvent>());
 
                 MouseWheelEvent evt = new MouseWheelEvent(cb, 0, 0, 0, 0, 0, 0, false, 0, 1, 1);
 
@@ -375,8 +374,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<MouseEvent> to = mouse(cb)
-                .test();
+                TestObserverEx<MouseEvent> to = mouse(cb)
+                .subscribeWith(new TestObserverEx<MouseEvent>());
 
                 MouseWheelEvent evt = new MouseWheelEvent(cb, 0, 0, 0, 0, 0, 0, false, 0, 1, 1);
 
@@ -415,8 +414,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<KeyEvent> to = keyboard(cb)
-                .test();
+                TestObserverEx<KeyEvent> to = keyboard(cb)
+                .subscribeWith(new TestObserverEx<KeyEvent>());
 
                 KeyEvent evt = new KeyEvent(cb, 0, 0, 0, 65, 'A');
 
@@ -463,8 +462,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<ComponentEvent> to = component(cb)
-                .test();
+                TestObserverEx<ComponentEvent> to = component(cb)
+                .subscribeWith(new TestObserverEx<ComponentEvent>());
 
                 ComponentEvent evt = new ComponentEvent(cb, 1);
 
@@ -514,8 +513,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<FocusEvent> to = focus(cb)
-                .test();
+                TestObserverEx<FocusEvent> to = focus(cb)
+                .subscribeWith(new TestObserverEx<FocusEvent>());
 
                 FocusEvent evt = new FocusEvent(cb, 1);
 
@@ -559,8 +558,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<HierarchyEvent> to = hierarchyBounds(cb)
-                .test();
+                TestObserverEx<HierarchyEvent> to = hierarchyBounds(cb)
+                .subscribeWith(new TestObserverEx<HierarchyEvent>());
 
                 HierarchyEvent evt = new HierarchyEvent(cb, 1, cb, new JPanel());
 
@@ -604,8 +603,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<HierarchyEvent> to = hierarchy(cb)
-                .test();
+                TestObserverEx<HierarchyEvent> to = hierarchy(cb)
+                .subscribeWith(new TestObserverEx<HierarchyEvent>());
 
                 HierarchyEvent evt = new HierarchyEvent(cb, 1, cb, new JPanel());
 
@@ -646,8 +645,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<InputMethodEvent> to = inputMethod(cb)
-                .test();
+                TestObserverEx<InputMethodEvent> to = inputMethod(cb)
+                .subscribeWith(new TestObserverEx<InputMethodEvent>());
 
                 InputMethodEvent evt = new InputMethodEvent(cb, InputMethodEvent.INPUT_METHOD_FIRST, TextHitInfo.leading(0), TextHitInfo.leading(0));
 
@@ -691,8 +690,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<PropertyChangeEvent> to = propertyChange(cb)
-                .test();
+                TestObserverEx<PropertyChangeEvent> to = propertyChange(cb)
+                .subscribeWith(new TestObserverEx<PropertyChangeEvent>());
 
                 PropertyChangeEvent evt = new PropertyChangeEvent(cb, "property", 0, 1);
 
@@ -733,8 +732,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<PropertyChangeEvent> to = propertyChange(cb, "property")
-                .test();
+                TestObserverEx<PropertyChangeEvent> to = propertyChange(cb, "property")
+                .subscribeWith(new TestObserverEx<PropertyChangeEvent>());
 
                 PropertyChangeEvent evt = new PropertyChangeEvent(cb, "property", 0, 1);
 
@@ -777,8 +776,8 @@ public class SwingObservableTest {
                 cb.setText("abc");
                 AbstractDocument d = (AbstractDocument) cb.getDocument();
 
-                TestObserver<DocumentEvent> to = document(cb)
-                .test();
+                TestObserverEx<DocumentEvent> to = document(cb)
+                .subscribeWith(new TestObserverEx<DocumentEvent>());
 
                 DocumentEvent evt = new DocumentEvent() {
 
@@ -859,8 +858,8 @@ public class SwingObservableTest {
                 cb.setText("abc");
                 AbstractDocument d = (AbstractDocument) cb.getDocument();
 
-                TestObserver<UndoableEditEvent> to = undoableEdit(cb)
-                .test();
+                TestObserverEx<UndoableEditEvent> to = undoableEdit(cb)
+                .subscribeWith(new TestObserverEx<UndoableEditEvent>());
 
                 UndoableEditEvent evt = new UndoableEditEvent(cb, null);
 
@@ -908,8 +907,8 @@ public class SwingObservableTest {
                 JEditorPane cb = new JEditorPane();
                 cb.setText("abc");
 
-                TestObserver<CaretEvent> to = caret(cb)
-                .test();
+                TestObserverEx<CaretEvent> to = caret(cb)
+                .subscribeWith(new TestObserverEx<CaretEvent>());
 
                 CaretEvent evt = new CaretEvent(cb) {
                     private static final long serialVersionUID = 1L;
@@ -961,8 +960,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<AncestorEvent> to = ancestor(cb)
-                .test();
+                TestObserverEx<AncestorEvent> to = ancestor(cb)
+                .subscribeWith(new TestObserverEx<AncestorEvent>());
 
                 AncestorEvent evt = new AncestorEvent(cb, 1, new JPanel(), new JPanel());
 
@@ -1009,8 +1008,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<VetoablePropertyChangeEvent> to = vetoableChange(cb)
-                .test();
+                TestObserverEx<VetoablePropertyChangeEvent> to = vetoableChange(cb)
+                .subscribeWith(new TestObserverEx<VetoablePropertyChangeEvent>());
 
                 PropertyChangeEvent evt = new PropertyChangeEvent(cb, "prop", 0, 1);
 
@@ -1069,14 +1068,14 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<VetoablePropertyChangeEvent> to = vetoableChange(cb)
+                TestObserverEx<VetoablePropertyChangeEvent> to = vetoableChange(cb)
                 .doOnNext(new Consumer<VetoablePropertyChangeEvent>() {
                     @Override
                     public void accept(VetoablePropertyChangeEvent e) throws Exception {
                         e.veto();
                     }
                 })
-                .test();
+                .subscribeWith(new TestObserverEx<VetoablePropertyChangeEvent>());
 
                 PropertyChangeEvent evt = new PropertyChangeEvent(cb, "prop", 0, 1);
 
@@ -1104,8 +1103,8 @@ public class SwingObservableTest {
             public void run() {
                 JLabel cb = new JLabel("abc");
 
-                TestObserver<ContainerEvent> to = container(cb)
-                .test();
+                TestObserverEx<ContainerEvent> to = container(cb)
+                .subscribeWith(new TestObserverEx<ContainerEvent>());
 
                 ContainerEvent evt = new ContainerEvent(cb, 0, new JPanel());
 
@@ -1149,8 +1148,8 @@ public class SwingObservableTest {
             public void run() {
                 JList<String> cb = new JList<String>();
 
-                TestObserver<ListSelectionEvent> to = listSelection(cb)
-                .test();
+                TestObserverEx<ListSelectionEvent> to = listSelection(cb)
+                .subscribeWith(new TestObserverEx<ListSelectionEvent>());
 
                 ListSelectionEvent evt = new ListSelectionEvent(cb, 0, 0, false);
 
@@ -1197,8 +1196,8 @@ public class SwingObservableTest {
 
                 ListSelectionModel lsm = cb.getSelectionModel();
 
-                TestObserver<ListSelectionEvent> to = listSelection(lsm)
-                .test();
+                TestObserverEx<ListSelectionEvent> to = listSelection(lsm)
+                .subscribeWith(new TestObserverEx<ListSelectionEvent>());
 
                 lsm.setSelectionInterval(0, 1);
 
@@ -1231,8 +1230,8 @@ public class SwingObservableTest {
             public void run() {
                 JEditorPane cb = new JEditorPane();
 
-                TestObserver<HyperlinkEvent> to = hyperlink(cb)
-                .test();
+                TestObserverEx<HyperlinkEvent> to = hyperlink(cb)
+                .subscribeWith(new TestObserverEx<HyperlinkEvent>());
 
                 URL u = null;
                 try {
@@ -1280,8 +1279,8 @@ public class SwingObservableTest {
             public void run() {
                 JInternalFrame cb = new JInternalFrame();
 
-                TestObserver<InternalFrameEvent> to = internalFrame(cb)
-                .test();
+                TestObserverEx<InternalFrameEvent> to = internalFrame(cb)
+                .subscribeWith(new TestObserverEx<InternalFrameEvent>());
 
                 InternalFrameEvent evt = new InternalFrameEvent(cb, 0);
 
@@ -1343,8 +1342,8 @@ public class SwingObservableTest {
                 DefaultListModel<String> md = new DefaultListModel<String>();
                 cb.setModel(md);
 
-                TestObserver<ListDataEvent> to = listChange(cb)
-                .test();
+                TestObserverEx<ListDataEvent> to = listChange(cb)
+                .subscribeWith(new TestObserverEx<ListDataEvent>());
 
                 md.addElement("abc");
                 md.setElementAt("def", 0);
@@ -1383,8 +1382,8 @@ public class SwingObservableTest {
             public void run() {
                 JMenuItem cb = new JMenuItem();
 
-                TestObserver<MenuDragMouseEvent> to = menuDrag(cb)
-                .test();
+                TestObserverEx<MenuDragMouseEvent> to = menuDrag(cb)
+                .subscribeWith(new TestObserverEx<MenuDragMouseEvent>());
 
                 MenuDragMouseEvent evt = new MenuDragMouseEvent(cb, 0, 0, 0, 0, 0, 0, false, null, MenuSelectionManager.defaultManager());
 
@@ -1434,8 +1433,8 @@ public class SwingObservableTest {
             public void run() {
                 JMenu cb = new JMenu();
 
-                TestObserver<MenuEvent> to = menu(cb)
-                .test();
+                TestObserverEx<MenuEvent> to = menu(cb)
+                .subscribeWith(new TestObserverEx<MenuEvent>());
 
                 MenuEvent evt = new MenuEvent(cb);
 
@@ -1482,8 +1481,8 @@ public class SwingObservableTest {
             public void run() {
                 JMenuItem cb = new JMenuItem();
 
-                TestObserver<MenuKeyEvent> to = menuKey(cb)
-                .test();
+                TestObserverEx<MenuKeyEvent> to = menuKey(cb)
+                .subscribeWith(new TestObserverEx<MenuKeyEvent>());
 
                 MenuKeyEvent evt = new MenuKeyEvent(cb, 0, 0, 0, 65, 'A', null, MenuSelectionManager.defaultManager());
 
@@ -1530,8 +1529,8 @@ public class SwingObservableTest {
             public void run() {
                 JPopupMenu cb = new JPopupMenu();
 
-                TestObserver<MenuKeyEvent> to = menuKey(cb)
-                .test();
+                TestObserverEx<MenuKeyEvent> to = menuKey(cb)
+                .subscribeWith(new TestObserverEx<MenuKeyEvent>());
 
                 MenuKeyEvent evt = new MenuKeyEvent(cb, 0, 0, 0, 65, 'A', null, MenuSelectionManager.defaultManager());
 
@@ -1578,8 +1577,8 @@ public class SwingObservableTest {
             public void run() {
                 JPopupMenu cb = new JPopupMenu();
 
-                TestObserver<PopupMenuEvent> to = popupMenu(cb)
-                .test();
+                TestObserverEx<PopupMenuEvent> to = popupMenu(cb)
+                .subscribeWith(new TestObserverEx<PopupMenuEvent>());
 
                 PopupMenuEvent evt = new PopupMenuEvent(cb);
 
@@ -1626,8 +1625,8 @@ public class SwingObservableTest {
             public void run() {
                 JComboBox<String> cb = new JComboBox<String>();
 
-                TestObserver<PopupMenuEvent> to = popupMenu(cb)
-                .test();
+                TestObserverEx<PopupMenuEvent> to = popupMenu(cb)
+                .subscribeWith(new TestObserverEx<PopupMenuEvent>());
 
                 PopupMenuEvent evt = new PopupMenuEvent(cb);
 
@@ -1683,8 +1682,8 @@ public class SwingObservableTest {
                 cb.setRowSorter(rs);
                 rs.setSortKeys(Collections.singletonList(new SortKey(0, SortOrder.ASCENDING)));
 
-                TestObserver<RowSorterEvent> to = rowSorter(cb)
-                .test();
+                TestObserverEx<RowSorterEvent> to = rowSorter(cb)
+                .subscribeWith(new TestObserverEx<RowSorterEvent>());
 
                 rs.sort();
 
@@ -1721,8 +1720,8 @@ public class SwingObservableTest {
                 tm.addRow(new Object[] { "cell" });
                 cb.setModel(tm);
 
-                TestObserver<TableModelEvent> to = tableModel(cb)
-                .test();
+                TestObserverEx<TableModelEvent> to = tableModel(cb)
+                .subscribeWith(new TestObserverEx<TableModelEvent>());
 
                 TableModelEvent evt = new TableModelEvent(tm, 0, 0, 1);
 
@@ -1771,8 +1770,8 @@ public class SwingObservableTest {
                 ListSelectionModel lsm = new DefaultListSelectionModel();
                 cm.setSelectionModel(lsm);
 
-                TestObserver<TableColumnModelEvent> to = tableColumnModel(cb)
-                .test();
+                TestObserverEx<TableColumnModelEvent> to = tableColumnModel(cb)
+                .subscribeWith(new TestObserverEx<TableColumnModelEvent>());
 
                 TableColumn tc = new TableColumn(1);
                 cm.addColumn(tc);
@@ -1828,8 +1827,8 @@ public class SwingObservableTest {
                 ListSelectionModel lsm = new DefaultListSelectionModel();
                 cm.setSelectionModel(lsm);
 
-                TestObserver<ChangeEvent> to = tableColumnMarginChange(cm)
-                .test();
+                TestObserverEx<ChangeEvent> to = tableColumnMarginChange(cm)
+                .subscribeWith(new TestObserverEx<ChangeEvent>());
 
                 TableColumn tc = new TableColumn(1);
                 cm.addColumn(tc);
@@ -1886,8 +1885,8 @@ public class SwingObservableTest {
                 cm.setSelectionModel(lsm);
                 lsm.clearSelection();
 
-                TestObserver<ListSelectionEvent> to = tableColumnSelectionChange(cm)
-                .test();
+                TestObserverEx<ListSelectionEvent> to = tableColumnSelectionChange(cm)
+                .subscribeWith(new TestObserverEx<ListSelectionEvent>());
 
                 TableColumn tc = new TableColumn(1);
                 cm.addColumn(tc);
@@ -1935,8 +1934,8 @@ public class SwingObservableTest {
             public void run() {
                 JTree cb = new JTree();
 
-                TestObserver<TreeExpansionEvent> to = treeExpansion(cb)
-                .test();
+                TestObserverEx<TreeExpansionEvent> to = treeExpansion(cb)
+                .subscribeWith(new TestObserverEx<TreeExpansionEvent>());
 
                 TreeExpansionEvent evt = new TreeExpansionEvent(cb, new TreePath(new DefaultMutableTreeNode()));
 
@@ -1982,8 +1981,8 @@ public class SwingObservableTest {
                 DefaultTreeModel tm = new DefaultTreeModel(new DefaultMutableTreeNode());
                 cb.setModel(tm);
 
-                TestObserver<TreeModelEvent> to = treeModel(cb)
-                .test();
+                TestObserverEx<TreeModelEvent> to = treeModel(cb)
+                .subscribeWith(new TestObserverEx<TreeModelEvent>());
 
                 TreeModelEvent evt = new TreeModelEvent(cb, new TreePath(new DefaultMutableTreeNode()));
 
@@ -2036,8 +2035,8 @@ public class SwingObservableTest {
                 DefaultTreeModel tm = new DefaultTreeModel(tn);
                 cb.setModel(tm);
 
-                TestObserver<TreeSelectionEvent> to = treeSelection(cb)
-                .test();
+                TestObserverEx<TreeSelectionEvent> to = treeSelection(cb)
+                .subscribeWith(new TestObserverEx<TreeSelectionEvent>());
 
                 cb.setSelectionInterval(0, 0);
 
@@ -2070,8 +2069,8 @@ public class SwingObservableTest {
             public void run() {
                 JTree cb = new JTree();
 
-                TestObserver<TreeExpansionEvent> to = treeWillExpand(cb)
-                .test();
+                TestObserverEx<TreeExpansionEvent> to = treeWillExpand(cb)
+                .subscribeWith(new TestObserverEx<TreeExpansionEvent>());
 
                 TreeExpansionEvent evt = new TreeExpansionEvent(cb, new TreePath(new DefaultMutableTreeNode()));
 
@@ -2133,8 +2132,8 @@ public class SwingObservableTest {
             public void run() {
                 JButton cb = new JButton();
 
-                TestObserver<ItemEvent> to = itemSelection(cb)
-                .test();
+                TestObserverEx<ItemEvent> to = itemSelection(cb)
+                .subscribeWith(new TestObserverEx<ItemEvent>());
 
                 ItemEvent evt = new ItemEvent(cb, 0, "", ItemEvent.SELECTED);
 
@@ -2175,8 +2174,8 @@ public class SwingObservableTest {
             public void run() {
                 JTabbedPane cb = new JTabbedPane();
 
-                TestObserver<ChangeEvent> to = change(cb)
-                .test();
+                TestObserverEx<ChangeEvent> to = change(cb)
+                .subscribeWith(new TestObserverEx<ChangeEvent>());
 
                 ChangeEvent evt = new ChangeEvent(cb);
 
@@ -2217,8 +2216,8 @@ public class SwingObservableTest {
             public void run() {
                 JSlider cb = new JSlider();
 
-                TestObserver<ChangeEvent> to = change(cb)
-                .test();
+                TestObserverEx<ChangeEvent> to = change(cb)
+                .subscribeWith(new TestObserverEx<ChangeEvent>());
 
                 ChangeEvent evt = new ChangeEvent(cb);
 
@@ -2259,8 +2258,8 @@ public class SwingObservableTest {
             public void run() {
                 JSpinner cb = new JSpinner();
 
-                TestObserver<ChangeEvent> to = change(cb)
-                .test();
+                TestObserverEx<ChangeEvent> to = change(cb)
+                .subscribeWith(new TestObserverEx<ChangeEvent>());
 
                 ChangeEvent evt = new ChangeEvent(cb);
 
@@ -2303,8 +2302,8 @@ public class SwingObservableTest {
                 SpinnerModel sm = new SpinnerNumberModel(0, 0, 100, 1);
                 cb.setModel(sm);
 
-                TestObserver<ChangeEvent> to = change(sm)
-                .test();
+                TestObserverEx<ChangeEvent> to = change(sm)
+                .subscribeWith(new TestObserverEx<ChangeEvent>());
 
                 sm.setValue(1);
 
@@ -2337,8 +2336,8 @@ public class SwingObservableTest {
             public void run() {
                 JButton cb = new JButton();
 
-                TestObserver<ChangeEvent> to = change(cb)
-                .test();
+                TestObserverEx<ChangeEvent> to = change(cb)
+                .subscribeWith(new TestObserverEx<ChangeEvent>());
 
                 ChangeEvent evt = new ChangeEvent(cb);
 
@@ -2380,8 +2379,8 @@ public class SwingObservableTest {
                 JButton cb = new JButton();
                 ButtonModel sm = cb.getModel();
 
-                TestObserver<ChangeEvent> to = change(sm)
-                .test();
+                TestObserverEx<ChangeEvent> to = change(sm)
+                .subscribeWith(new TestObserverEx<ChangeEvent>());
 
                 cb.doClick();
 
@@ -2414,8 +2413,8 @@ public class SwingObservableTest {
             public void run() {
                 JViewport cb = new JViewport();
 
-                TestObserver<ChangeEvent> to = change(cb)
-                .test();
+                TestObserverEx<ChangeEvent> to = change(cb)
+                .subscribeWith(new TestObserverEx<ChangeEvent>());
 
                 ChangeEvent evt = new ChangeEvent(cb);
 
@@ -2456,8 +2455,8 @@ public class SwingObservableTest {
             public void run() {
                 DefaultColorSelectionModel cb = new DefaultColorSelectionModel();
 
-                TestObserver<ChangeEvent> to = change(cb)
-                .test();
+                TestObserverEx<ChangeEvent> to = change(cb)
+                .subscribeWith(new TestObserverEx<ChangeEvent>());
 
                 cb.setSelectedColor(Color.RED);
 
@@ -2490,8 +2489,8 @@ public class SwingObservableTest {
             public void run() {
                 JProgressBar cb = new JProgressBar();
 
-                TestObserver<ChangeEvent> to = change(cb)
-                .test();
+                TestObserverEx<ChangeEvent> to = change(cb)
+                .subscribeWith(new TestObserverEx<ChangeEvent>());
 
                 ChangeEvent evt = new ChangeEvent(cb);
 
@@ -2532,8 +2531,8 @@ public class SwingObservableTest {
             public void run() {
                 BoundedRangeModel cb = new DefaultBoundedRangeModel(0, 0, 0, 100);
 
-                TestObserver<ChangeEvent> to = change(cb)
-                .test();
+                TestObserverEx<ChangeEvent> to = change(cb)
+                .subscribeWith(new TestObserverEx<ChangeEvent>());
 
                 cb.setValue(1);
 
@@ -2566,8 +2565,8 @@ public class SwingObservableTest {
             public void run() {
                 JFrame cb = new JFrame();
 
-                TestObserver<WindowEvent> to = window(cb)
-                .test();
+                TestObserverEx<WindowEvent> to = window(cb)
+                .subscribeWith(new TestObserverEx<WindowEvent>());
 
                 WindowEvent evt = new WindowEvent(cb, 0);
 
@@ -2647,8 +2646,8 @@ public class SwingObservableTest {
             public void run() {
                 JFrame cb = new JFrame();
 
-                TestObserver<WindowEvent> to = window(cb, 0)
-                .test();
+                TestObserverEx<WindowEvent> to = window(cb, 0)
+                .subscribeWith(new TestObserverEx<WindowEvent>());
 
                 WindowEvent evt = new WindowEvent(cb, 0);
 
@@ -2725,7 +2724,7 @@ public class SwingObservableTest {
     public void swingObserveOnError() {
         Observable.error(new IOException())
         .compose(SwingObservable.observeOnEdt())
-        .test()
+        .subscribeWith(new TestObserverEx<Object>())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(IOException.class);
     }
@@ -2734,7 +2733,7 @@ public class SwingObservableTest {
     public void dispose() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> to = new Observable<Integer>() {
+            TestObserverEx<Integer> to = new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
                     observer.onSubscribe(Disposables.empty());
@@ -2747,7 +2746,7 @@ public class SwingObservableTest {
             }
             .compose(SwingObservable.<Integer>observeOnEdt())
             .take(1)
-            .test();
+            .subscribeWith(new TestObserverEx<Integer>());
 
             to.awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1);
@@ -2761,7 +2760,7 @@ public class SwingObservableTest {
 
     @Test
     public void abstractEventConsumer() {
-        AbstractEventConsumer<Object, Object> aec = new AbstractEventConsumer<Object, Object>(new TestObserver<Object>(), new Object()) {
+        AbstractEventConsumer<Object, Object> aec = new AbstractEventConsumer<Object, Object>(new TestObserverEx<Object>(), new Object()) {
             private static final long serialVersionUID = 2275910182880030397L;
 
             @Override
