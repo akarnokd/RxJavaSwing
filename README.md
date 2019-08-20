@@ -16,7 +16,7 @@ Bridge between Java 6 Swing (GUI) events and RxJava 3 + a scheduler for the swin
 
 ```
 dependencies {
-    compile "com.github.akarnokd:rxjava3-swing:3.0.0-RC1"
+    compile "com.github.akarnokd:rxjava3-swing:3.0.0-RC2"
 }
 ```
 
@@ -26,6 +26,10 @@ Maven search:
 [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.akarnokd%22)
 
 # Usage
+
+```java
+import hu.akarnokd.rxjava3.swing.*;
+```
 
 ## SwingObservable
 
