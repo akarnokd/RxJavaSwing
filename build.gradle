@@ -1,4 +1,12 @@
 buildscript {
+	ext.rxjavaVersion = "3.0.0-RC4"
+	ext.rxjavaDocVersion = "3.x"
+	ext.licenseVersion = "0.15.0"
+	ext.animalSnifferVersion = "1.5.0"
+	ext.bndVersion = "4.3.0"
+	ext.mavenPublishPluginVersion = "0.8.0"
+	ext.jacocoVersion = "0.8.5"
+
     repositories {
         mavenCentral()
         maven {
@@ -7,15 +15,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
-//        classpath "me.champeau.gradle:jmh-gradle-plugin:0.2.0"
-        classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.1.0'
+        classpath "biz.aQute.bnd:biz.aQute.bnd.gradle:$bndVersion"
+        classpath "com.vanniktech:gradle-maven-publish-plugin:$mavenPublishPluginVersion"
+        classpath "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:$licenseVersion"
+        classpath "ru.vyarus:gradle-animalsniffer-plugin:$animalSnifferVersion"
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
-//apply plugin: "me.champeau.gradle.jmh"
 apply plugin: 'pmd'
 apply plugin: 'jacoco'
 apply plugin: 'ru.vyarus.animalsniffer'
@@ -41,88 +49,34 @@ repositories {
     maven { url 'http://repo.spring.io/libs-snapshot' }
 }
 
-apply from: file('gradle/maven.gradle')
-apply plugin: 'maven'
-apply plugin: 'osgi'
-
 dependencies {
     signature 'org.codehaus.mojo.signature:java16:1.1@signature'
 
-    compile "io.reactivex.rxjava3:rxjava:3.0.0-RC4"
+    compile "io.reactivex.rxjava3:rxjava:$rxjavaVersion"
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
+apply plugin: 'maven'
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives jar
-    archives sourcesJar
-    archives javadocJar
-}
-
-//uploadMavenCentral {
-//    repositories {
-//        mavenDeployer {
-//            pom.whenConfigured {
-//                p -> p.dependencies = p.dependencies.findAll { 
-//                    dep -> dep.artifactId != "rxjava" 
-//                }
-//            }
-//        }
-//    }
-//}
+apply plugin: 'biz.aQute.bnd.builder'
 
 jar {
-    manifest {
-        name = 'rxjava3-swing'
-        instruction 'Bundle-Vendor', 'akarnokd'
-        instruction 'Bundle-DocURL', 'https://github.com/akarnokd/RxJavaSwing'
-        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
-        instruction 'Eclipse-ExtensibleAPI', 'true'
-    }
+    bnd ('Bundle-Name': 'rxjava3-bridge',
+            'Bundle-Vendor': 'akarnokd',
+            'Bundle-Description': 'Bridge between Java 6 Swing (GUI) events and RxJava 3 + a scheduler for the swing event dispatch thread.',
+            'Import-Package': '!org.junit,!junit.framework,!org.mockito.*,*',
+            'Bundle-DocURL': 'https://github.com/akarnokd/RxJavaSwing')
 }
 
-apply plugin: 'maven-publish'
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            artifact (sourcesJar) { 
-                classifier = 'sources'
-            }
-        }
-    }
-}
-
-/*
-jmh {
-    jmhVersion = '1.16'
-    humanOutputFile = null
-    if (project.hasProperty('jmh')) {
-        include = ".*" + project.jmh + ".*"
-    } else {
-        include = ".*"
-    }
-}
-
-plugins.withType(EclipsePlugin) {
-    project.eclipse.classpath.plusConfigurations += [ configurations.jmh ]
-}
-*/
+apply plugin: "com.vanniktech.maven.publish"
 
 javadoc {
     failOnError = false
-    options.links("http://docs.oracle.com/javase/7/docs/api/")
+    options.links(
+		"http://docs.oracle.com/javase/7/docs/api/",
+		"http://reactivex.io/RxJava/$rxjavaDocVersion/javadoc"
+	)
 }
 
 test {
@@ -144,7 +98,7 @@ license {
 }
 
 jacoco {
-    toolVersion = '0.7.7.201606060606' // See http://www.eclemma.org/jacoco/.
+    toolVersion = '$jacocoVersion' // See http://www.eclemma.org/jacoco/.
 }
 
 jacocoTestReport {
@@ -173,7 +127,7 @@ pmdMain {
     }
 }
 
-task pmdPrint(dependsOn: 'pmdMain') << {
+task pmdPrint(dependsOn: 'pmdMain') doLast {
     File file = rootProject.file('build/reports/pmd/main.xml')
     if (file.exists()) {
 
@@ -194,5 +148,5 @@ build.dependsOn pmdPrint
 check.dependsOn pmdPrint
 
 animalsniffer {
-    annotation = 'io.reactivex.internal.util.SuppressAnimalSniffer'
+    annotation = 'io.reactivex.rxjava3.internal.util.SuppressAnimalSniffer'
 }
