@@ -43,21 +43,16 @@ if (!hasProperty('mainClass')) {
 
 repositories {
     mavenCentral()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    maven { url 'https://oss.sonatype.org/content/groups/public' }
-    maven { url 'https://oss.jfrog.org/libs-snapshot' }
-    maven { url 'http://repo.spring.io/libs-snapshot' }
+    // maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 }
 
 dependencies {
     signature 'org.codehaus.mojo.signature:java16:1.1@signature'
 
-    compile "io.reactivex.rxjava3:rxjava:$rxjavaVersion"
+    implementation "io.reactivex.rxjava3:rxjava:$rxjavaVersion"
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
-
-apply plugin: 'maven'
 
 apply plugin: 'biz.aQute.bnd.builder'
 
