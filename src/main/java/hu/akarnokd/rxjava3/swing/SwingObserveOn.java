@@ -38,7 +38,7 @@ implements ObservableTransformer<T, T> {
 
     @Override
     public ObservableSource<T> apply(Observable<T> upstream) {
-        return new SwingObserveOn<T>(upstream);
+        return new SwingObserveOn<>(upstream);
     }
 
     static final class ObserveOnObserver<T> implements Observer<T>, Disposable, Runnable {
@@ -74,7 +74,7 @@ implements ObservableTransformer<T, T> {
 
         @Override
         public void onNext(T t) {
-            EventQueue.invokeLater(new OnNextEvent<T>(actual, t, this));
+            EventQueue.invokeLater(new OnNextEvent<>(actual, t, this));
         }
 
         @Override

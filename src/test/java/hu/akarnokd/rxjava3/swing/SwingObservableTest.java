@@ -43,7 +43,7 @@ import org.junit.Test;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.exceptions.ProtocolViolationException;
 import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -61,7 +61,7 @@ public class SwingObservableTest {
      * @param run the task to run
      */
     void runEdt(final Runnable run) {
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicReference<Throwable> error = new AtomicReference<>();
         try {
             EventQueue.invokeAndWait(new Runnable() {
                 @Override
@@ -169,7 +169,7 @@ public class SwingObservableTest {
         runEdt(new Runnable() {
             @Override
             public void run() {
-                JComboBox<String> cb = new JComboBox<String>();
+                JComboBox<String> cb = new JComboBox<>();
                 cb.addItem("a");
                 cb.addItem("b");
 
@@ -1146,7 +1146,7 @@ public class SwingObservableTest {
         runEdt(new Runnable() {
             @Override
             public void run() {
-                JList<String> cb = new JList<String>();
+                JList<String> cb = new JList<>();
 
                 TestObserverEx<ListSelectionEvent> to = listSelection(cb)
                 .subscribeWith(new TestObserverEx<ListSelectionEvent>());
@@ -1188,9 +1188,9 @@ public class SwingObservableTest {
         runEdt(new Runnable() {
             @Override
             public void run() {
-                JList<String> cb = new JList<String>();
+                JList<String> cb = new JList<>();
 
-                DefaultListModel<String> md = new DefaultListModel<String>();
+                DefaultListModel<String> md = new DefaultListModel<>();
                 md.addElement("abc");
                 cb.setModel(md);
 
@@ -1337,9 +1337,9 @@ public class SwingObservableTest {
         runEdt(new Runnable() {
             @Override
             public void run() {
-                JList<String> cb = new JList<String>();
+                JList<String> cb = new JList<>();
 
-                DefaultListModel<String> md = new DefaultListModel<String>();
+                DefaultListModel<String> md = new DefaultListModel<>();
                 cb.setModel(md);
 
                 TestObserverEx<ListDataEvent> to = listChange(cb)
@@ -1623,7 +1623,7 @@ public class SwingObservableTest {
         runEdt(new Runnable() {
             @Override
             public void run() {
-                JComboBox<String> cb = new JComboBox<String>();
+                JComboBox<String> cb = new JComboBox<>();
 
                 TestObserverEx<PopupMenuEvent> to = popupMenu(cb)
                 .subscribeWith(new TestObserverEx<PopupMenuEvent>());
@@ -1677,7 +1677,7 @@ public class SwingObservableTest {
                 tm.addRow(new Object[] { "cell" });
                 cb.setModel(tm);
 
-                TableRowSorter<TableModel> rs = new TableRowSorter<TableModel>();
+                TableRowSorter<TableModel> rs = new TableRowSorter<>();
                 rs.setModel(tm);
                 cb.setRowSorter(rs);
                 rs.setSortKeys(Collections.singletonList(new SortKey(0, SortOrder.ASCENDING)));
@@ -2724,7 +2724,7 @@ public class SwingObservableTest {
     public void swingObserveOnError() {
         Observable.error(new IOException())
         .compose(SwingObservable.observeOnEdt())
-        .subscribeWith(new TestObserverEx<Object>())
+        .subscribeWith(new TestObserverEx<>())
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(IOException.class);
     }
@@ -2736,8 +2736,8 @@ public class SwingObservableTest {
             TestObserverEx<Integer> to = new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> observer) {
-                    observer.onSubscribe(Disposables.empty());
-                    observer.onSubscribe(Disposables.empty());
+                    observer.onSubscribe(Disposable.empty());
+                    observer.onSubscribe(Disposable.empty());
                     observer.onNext(1);
                     observer.onNext(2);
                     observer.onError(new IOException());
@@ -2760,7 +2760,7 @@ public class SwingObservableTest {
 
     @Test
     public void abstractEventConsumer() {
-        AbstractEventConsumer<Object, Object> aec = new AbstractEventConsumer<Object, Object>(new TestObserverEx<Object>(), new Object()) {
+        AbstractEventConsumer<Object, Object> aec = new AbstractEventConsumer<Object, Object>(new TestObserverEx<>(), new Object()) {
             private static final long serialVersionUID = 2275910182880030397L;
 
             @Override

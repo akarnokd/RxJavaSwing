@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.exceptions.*;
 import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.internal.functions.ObjectHelper;
 import io.reactivex.rxjava3.internal.util.ExceptionHelper;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -120,7 +119,7 @@ public final class TestHelper {
             err.initCause(ex);
             throw err;
         }
-        if (!ObjectHelper.equals(message, ex.getMessage())) {
+        if (!Objects.equals(message, ex.getMessage())) {
             AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage());
             err.initCause(ex);
             throw err;
@@ -140,7 +139,7 @@ public final class TestHelper {
             err.initCause(list.get(index));
             throw err;
         }
-        if (!ObjectHelper.equals(message, ex.getMessage())) {
+        if (!Objects.equals(message, ex.getMessage())) {
             AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage());
             err.initCause(ex);
             throw err;
