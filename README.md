@@ -1,7 +1,7 @@
 # RxJavaSwing
 
 
-<a href='https://travis-ci.org/akarnokd/RxJavaSwing/builds'><img src='https://travis-ci.org/akarnokd/RxJavaSwing.svg?branch=3.x'></a>
+<a href='https://travis-ci.com/akarnokd/RxJavaSwing/builds'><img src='https://travis-ci.com/akarnokd/RxJavaSwing.svg?branch=3.x'></a>
 [![codecov.io](http://codecov.io/github/akarnokd/RxJavaSwing/coverage.svg?branch=3.x)](http://codecov.io/github/akarnokd/RxJavaSwing?branch=3.x)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.akarnokd/rxjava3-swing/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.akarnokd/rxjava3-swing)
 
