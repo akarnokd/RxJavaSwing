@@ -20,7 +20,7 @@ RxJava 3.x: [![RxJava 3.x](https://maven-badges.herokuapp.com/maven-central/io.r
 
 ```
 dependencies {
-    compile "com.github.akarnokd:rxjava3-swing:3.1.1"
+    implementation "com.github.akarnokd:rxjava3-swing:3.1.1"
 }
 ```
 
@@ -35,7 +35,7 @@ RxJava 2.x: [![RxJava 2.x](https://maven-badges.herokuapp.com/maven-central/io.r
 
 ```
 dependencies {
-    compile "com.github.akarnokd:rxjava2-swing:0.3.7"
+    implementation "com.github.akarnokd:rxjava2-swing:0.3.7"
 }
 ```
 
