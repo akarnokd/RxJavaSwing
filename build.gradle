@@ -1,5 +1,5 @@
 buildscript {
-	ext.rxjavaVersion = "3.1.4"
+	ext.rxjavaVersion = "3.1.5"
 	ext.rxjavaDocVersion = "3.x"
 	ext.licenseVersion = "0.16.1"
 	ext.animalSnifferVersion = "1.5.4"
