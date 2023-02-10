@@ -2,7 +2,7 @@ buildscript {
 	ext.rxjavaVersion = "3.1.6"
 	ext.rxjavaDocVersion = "3.x"
 	ext.licenseVersion = "0.16.1"
-	ext.animalSnifferVersion = "1.6.0"
+	ext.animalSnifferVersion = "1.7.0"
 	ext.bndVersion = "6.4.0"
 	ext.mavenPublishPluginVersion = "0.18.0"
 	ext.jacocoVersion = "0.8.5"
