@@ -4,7 +4,7 @@ buildscript {
 	ext.licenseVersion = "0.16.1"
 	ext.animalSnifferVersion = "1.6.0"
 	ext.bndVersion = "6.4.0"
-	ext.mavenPublishPluginVersion = "0.18.0"
+	ext.mavenPublishPluginVersion = "0.25.1"
 	ext.jacocoVersion = "0.8.5"
 
     repositories {
